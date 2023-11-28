@@ -1,5 +1,9 @@
 import { extend } from "../shared"
 
+// 当前正在执行的响应函数
+let activeEffect
+// 标识是否应该收集依赖
+let shouldTrack = true
 class ReactiveEffect {
   private _fn: any
   deps = [] // 存储当前响应函数依赖的所有属性的集合
@@ -11,8 +15,14 @@ class ReactiveEffect {
 
   // 执行响应函数
   run() {
+    if (!this.active) return this._fn() // 如果当前响应函数不是激活状态，则直接执行响应函数
+
+    shouldTrack = true // 标记为应该收集依赖
     activeEffect = this // 将当前响应函数实例赋值给 activeEffect
-    return this._fn() // 执行响应函数
+
+    const result = this._fn() // 执行响应函数
+    shouldTrack = false // 标记为不应该收集依赖
+    return result
   }
   // 停止响应函数
   stop() {
@@ -31,12 +41,15 @@ function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+  effect.deps.length = 0
 }
 
 // 全局的依赖映射表
 const targetMap = new Map()
 // 收集依赖
 export function track(target, key) {
+  if (!isTracking()) return // 如果不应该收集依赖，则直接返回
+
   // target -> key -> dep
   let depsMap = targetMap.get(target)
   if (!depsMap) {
@@ -49,9 +62,16 @@ export function track(target, key) {
     dep = new Set()
     depsMap.set(key, dep)
   }
-  if (!activeEffect) return
+
+  if(dep.has(activeEffect)) return // 如果当前属性已经收集过依赖，则直接返回
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
+}
+
+// 判断是否应该收集依赖
+function isTracking() {
+  // 返回 true 则表示应该收集依赖
+  return shouldTrack && activeEffect !== undefined
 }
 
 // 触发依赖
@@ -68,7 +88,6 @@ export function trigger(target, key) {
   }
 }
 
-let activeEffect
 // 创建并管理一个反应式效应（Reactive Effect）
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
@@ -79,7 +98,7 @@ export function effect(fn, options: any = {}) {
 
   const runner: any = _effect.run.bind(_effect)
   runner.effect = _effect
-  
+
   return runner
 }
 
