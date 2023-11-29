@@ -46,7 +46,7 @@ describe("ref", () => {
     expect(isRef(1)).toBe(false)
     expect(isRef(user)).toBe(false)
   })
-  it("unRef", () => {
+  it("unref", () => {
     const a = ref(1)
     expect(unref(a)).toBe(1)
     expect(unref(1)).toBe(1)
