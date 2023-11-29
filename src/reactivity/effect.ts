@@ -63,13 +63,18 @@ export function track(target, key) {
     depsMap.set(key, dep)
   }
 
-  if(dep.has(activeEffect)) return // 如果当前属性已经收集过依赖，则直接返回
+  trackEffects(dep)
+}
+
+export function trackEffects(dep) {
+  // 如果当前属性已经收集过依赖，则直接返回
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
 }
 
 // 判断是否应该收集依赖
-function isTracking() {
+export function isTracking() {
   // 返回 true 则表示应该收集依赖
   return shouldTrack && activeEffect !== undefined
 }
@@ -79,6 +84,10 @@ export function trigger(target, key) {
   let depsMap = targetMap.get(target)
   let dep = depsMap.get(key)
 
+  triggerEffects(dep)
+}
+
+export function triggerEffects(dep) {
   for (const effect of dep) {
     if (effect.scheduler) {
       effect.scheduler()
