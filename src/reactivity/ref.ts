@@ -4,9 +4,9 @@ import { reactive } from "./reactive"
 
 class RefImpl {
   private _value: any
-  public dep
   private _rawValue: any // 原始值 用来判断是否改变
-  public __v_isRef = true
+  public dep?
+  public readonly __v_isRef = true
   constructor(value) {
     this._rawValue = value
     this._value = convert(value)
@@ -46,4 +46,19 @@ export function isRef(ref) {
 
 export function unref(val) {
   return isRef(val) ? val.value : val
+}
+
+export function proxyRefs(objectWithRefs) {
+  return new Proxy(objectWithRefs, {
+    get(target, key) {
+      return unref(Reflect.get(target, key))
+    },
+    set(target, key, value) {
+      if (isRef(target[key]) && !isRef(value)) {
+        return (target[key].value = value)
+      } else {
+        return Reflect.set(target, key, value)
+      }
+    }
+  })
 }
