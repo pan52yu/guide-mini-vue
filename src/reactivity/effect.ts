@@ -4,7 +4,7 @@ import { extend } from "../shared"
 let activeEffect
 // 标识是否应该收集依赖
 let shouldTrack = true
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any
   deps = [] // 存储当前响应函数依赖的所有属性的集合
   active = true // 标识当前响应函数是否激活
