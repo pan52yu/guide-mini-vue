@@ -1,4 +1,4 @@
-import { mutableHandler, readonlyHandler } from "./baseHandlers"
+import { mutableHandler, readonlyHandler, shallowReadonlyHandler } from "./baseHandlers"
 
 export const enum ReactiveFlags {
   // 是否是响应式对象
@@ -13,6 +13,9 @@ export function reactive(raw) {
 
 export function readonly(raw) {
   return createReactiveObject(raw, readonlyHandler)
+}
+export function shallowReadonly(raw) {
+  return createReactiveObject(raw, shallowReadonlyHandler)
 }
 
 export function isReactive(value) {
