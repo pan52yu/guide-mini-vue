@@ -14,13 +14,13 @@
 - [x] trigger 触发依赖
 - [x] 支持 isReactive
 - [x] 支持嵌套 reactive
-- [ ] 支持 toRaw
+- [x] 支持 toRaw
 - [x] 支持 effect.scheduler
 - [x] 支持 effect.stop
 - [x] 支持 isReadonly
-- [ ] 支持 isProxy
-- [ ] 支持 shallowReadonly
-- [ ] 支持 proxyRefs
+- [x] 支持 isProxy
+- [x] 支持 shallowReadonly
+- [x] 支持 proxyRefs
 ## 作者
 
 - [@evansky](https://www.github.com/pan52yu)

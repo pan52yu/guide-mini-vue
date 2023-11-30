@@ -5,7 +5,7 @@ class ComputedRefImpl {
   private _dirty: boolean = true
   private _value: any
   private _effect: any
-  constructor(getter, _setter, isReadonly) {
+  constructor(getter) {
     this._getter = getter
 
     this._effect = new ReactiveEffect(getter, () => {
@@ -26,5 +26,5 @@ class ComputedRefImpl {
 }
 
 export function computed(getter) {
-  return new ComputedRefImpl(getter, null, false)
+  return new ComputedRefImpl(getter)
 }
